@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
 
 class Book extends Model
 {
@@ -18,7 +17,6 @@ class Book extends Model
         'stock',
     ];
 
-    // Relasi: satu buku bisa dipinjam banyak kali
     public function loans()
     {
         return $this->hasMany(Loan::class);
