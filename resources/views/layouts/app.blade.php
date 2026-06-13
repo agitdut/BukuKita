@@ -101,6 +101,13 @@
             </a>
           </li>
 
+          <li class="nav-item">
+            <a href="{{ route('chat.index') }}" class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
+              <i class="nav-icon fas fa-robot"></i>
+              <p>AI Assistant</p>
+            </a>
+          </li>
+
         </ul>
       </nav>
     </div>
