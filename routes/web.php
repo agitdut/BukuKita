@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -26,6 +27,9 @@ Route::middleware('auth')->group(function () {
     // Loans
     Route::resource('loans', LoanController::class)->except(['edit', 'update', 'destroy']);
     Route::post('/loans/{loan}/return', [LoanController::class, 'return'])->name('loans.return');
+
+    // Users
+    Route::resource('users', UserController::class);
 });
 
 require __DIR__.'/auth.php';
