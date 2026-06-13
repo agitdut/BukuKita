@@ -12,38 +12,39 @@ class RoleAndUserSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Buat Permission
-        Permission::firstOrCreate(['name' => 'kelola buku']);
-        Permission::firstOrCreate(['name' => 'pinjam buku']);
-        Permission::firstOrCreate(['name' => 'lihat katalog']);
-        Permission::firstOrCreate(['name' => 'kelola transaksi']);
+        Permission::firstOrCreate(['name' => 'view books']);
+        Permission::firstOrCreate(['name' => 'create books']);
+        Permission::firstOrCreate(['name' => 'edit books']);
+        Permission::firstOrCreate(['name' => 'delete books']);
+        Permission::firstOrCreate(['name' => 'view loans']);
+        Permission::firstOrCreate(['name' => 'create loans']);
+        Permission::firstOrCreate(['name' => 'manage users']);
 
-        // 2. Role Petugas (semua akses)
-        $petugas = Role::firstOrCreate(['name' => 'petugas']);
-        $petugas->givePermissionTo(Permission::all());
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $adminRole->givePermissionTo(Permission::all());
 
-        // 3. Role Mahasiswa (hanya pinjam & lihat katalog)
-        $mahasiswa = Role::firstOrCreate(['name' => 'mahasiswa']);
-        $mahasiswa->givePermissionTo(['pinjam buku', 'lihat katalog']);
+        $staffRole = Role::firstOrCreate(['name' => 'staff']);
+        $staffRole->givePermissionTo(['view books', 'create books', 'edit books', 'view loans', 'create loans']);
 
-        // 4. Buat User Petugas
-        $userPetugas = User::firstOrCreate(
-            ['email' => 'petugas@example.com'],
-            [
-                'name'     => 'Petugas Perpustakaan',
-                'password' => Hash::make('password'),
-            ]
+        $memberRole = Role::firstOrCreate(['name' => 'member']);
+        $memberRole->givePermissionTo(['view books', 'view loans']);
+
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            ['name' => 'Admin User', 'password' => Hash::make('password')]
         );
-        $userPetugas->assignRole($petugas);
+        $admin->assignRole($adminRole);
 
-        // 5. Buat User Mahasiswa
-        $userMahasiswa = User::firstOrCreate(
-            ['email' => 'mahasiswa@example.com'],
-            [
-                'name'     => 'Mahasiswa',
-                'password' => Hash::make('password'),
-            ]
+        $staff = User::firstOrCreate(
+            ['email' => 'staff@example.com'],
+            ['name' => 'Staff User', 'password' => Hash::make('password')]
         );
-        $userMahasiswa->assignRole($mahasiswa);
+        $staff->assignRole($staffRole);
+
+        $member = User::firstOrCreate(
+            ['email' => 'member@example.com'],
+            ['name' => 'Member User', 'password' => Hash::make('password')]
+        );
+        $member->assignRole($memberRole);
     }
 }
