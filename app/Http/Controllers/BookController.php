@@ -8,20 +8,17 @@ use Illuminate\Support\Facades\Http;
 
 class BookController extends Controller
 {
-    // Halaman daftar buku
     public function index()
     {
         $books = Book::latest()->paginate(10);
         return view('books.index', compact('books'));
     }
 
-    // Halaman form tambah buku
     public function create()
     {
         return view('books.create');
     }
 
-    // Simpan buku baru
     public function store(Request $request)
     {
         $request->validate([
@@ -36,13 +33,11 @@ class BookController extends Controller
             ->with('success', 'Buku berhasil ditambahkan!');
     }
 
-    // Halaman edit buku
     public function edit(Book $book)
     {
         return view('books.edit', compact('book'));
     }
 
-    // Update buku
     public function update(Request $request, Book $book)
     {
         $request->validate([
@@ -57,7 +52,6 @@ class BookController extends Controller
             ->with('success', 'Buku berhasil diupdate!');
     }
 
-    // Hapus buku
     public function destroy(Book $book)
     {
         $book->delete();
@@ -65,13 +59,28 @@ class BookController extends Controller
             ->with('success', 'Buku berhasil dihapus!');
     }
 
-    // Endpoint untuk fetch data dari Google Books API berdasarkan ISBN
     public function fetchByIsbn(Request $request)
     {
         $isbn = $request->input('isbn');
+        $apiKey = env('GROQ_API_KEY');
 
-        $response = Http::get("https://www.googleapis.com/books/v1/volumes", [
-            'q' => 'isbn:' . $isbn,
+        $response = Http::withOptions([
+            'verify' => false,
+        ])->withHeaders([
+            'Authorization' => 'Bearer ' . $apiKey,
+            'Content-Type'  => 'application/json',
+        ])->post('https://api.groq.com/openai/v1/chat/completions', [
+            'model'    => 'llama-3.3-70b-versatile',
+            'messages' => [
+                [
+                    'role'    => 'system',
+                    'content' => 'You are a book database assistant. When given an ISBN, return ONLY a valid JSON object with these fields: title, author, publisher, published_year, description. No explanation, no markdown, just pure JSON.'
+                ],
+                [
+                    'role'    => 'user',
+                    'content' => 'Give me book information for ISBN: ' . $isbn
+                ]
+            ],
         ]);
 
         if ($response->failed()) {
@@ -79,20 +88,25 @@ class BookController extends Controller
         }
 
         $data = $response->json();
+        $text = $data['choices'][0]['message']['content'] ?? null;
 
-        if (empty($data['items'])) {
+        if (!$text) {
             return response()->json(['error' => 'Buku tidak ditemukan'], 404);
         }
 
-        $info = $data['items'][0]['volumeInfo'];
+        $bookData = json_decode($text, true);
+
+        if (!$bookData) {
+            return response()->json(['error' => 'Format data tidak valid'], 500);
+        }
 
         return response()->json([
-            'title'          => $info['title'] ?? '',
-            'author'         => isset($info['authors']) ? implode(', ', $info['authors']) : '',
-            'publisher'      => $info['publisher'] ?? '',
-            'published_year' => isset($info['publishedDate']) ? substr($info['publishedDate'], 0, 4) : '',
-            'description'    => $info['description'] ?? '',
-            'cover_image'    => $info['imageLinks']['thumbnail'] ?? '',
+            'title'          => $bookData['title'] ?? '',
+            'author'         => $bookData['author'] ?? '',
+            'publisher'      => $bookData['publisher'] ?? '',
+            'published_year' => $bookData['published_year'] ?? '',
+            'description'    => $bookData['description'] ?? '',
+            'cover_image'    => '',
         ]);
     }
 }
