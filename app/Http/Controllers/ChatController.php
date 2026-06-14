@@ -69,7 +69,6 @@ Jawab pertanyaan pengguna dengan ramah dan informatif. Jika ditanya tentang buku
             return response()->json(['error' => 'Respons AI kosong'], 500);
         }
 
-        // Simpan ke database
         ChatMessage::create([
             'user_id'  => auth()->id(),
             'prompt'   => $prompt,
@@ -77,5 +76,12 @@ Jawab pertanyaan pengguna dengan ramah dan informatif. Jika ditanya tentang buku
         ]);
 
         return response()->json(['text' => $aiText]);
+    }
+
+    public function clearHistory()
+    {
+        ChatMessage::where('user_id', auth()->id())->delete();
+        return redirect()->route('chat.index')
+            ->with('success', 'Riwayat chat berhasil dihapus!');
     }
 }

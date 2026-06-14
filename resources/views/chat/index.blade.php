@@ -9,8 +9,18 @@
     <!-- Sidebar Riwayat Chat -->
     <div class="col-md-3">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title"><i class="fas fa-history mr-1"></i> Riwayat Chat</h3>
+                @if($messages->isNotEmpty())
+                <form action="{{ route('chat.clear') }}" method="POST"
+                    onsubmit="return confirm('Yakin hapus semua riwayat chat?')">
+                    @csrf
+                    @method('DELETE')
+                    <button class="btn btn-danger btn-xs">
+                        <i class="fas fa-trash"></i> Hapus
+                    </button>
+                </form>
+                @endif
             </div>
             <div class="card-body p-0">
                 <ul class="nav nav-pills nav-sidebar flex-column p-2">
@@ -77,13 +87,11 @@
                 </div>
                 @else
                     @foreach($messages->reverse() as $msg)
-                    <!-- Pesan User -->
                     <div class="d-flex justify-content-end mb-3">
                         <div class="bg-primary text-white p-3 rounded" style="max-width:70%; border-radius:15px 15px 0 15px !important;">
                             {{ $msg->prompt }}
                         </div>
                     </div>
-                    <!-- Pesan AI -->
                     <div class="d-flex justify-content-start mb-3">
                         <div class="bg-white p-3 rounded shadow-sm" style="max-width:70%; border-radius:15px 15px 15px 0 !important;">
                             <small class="text-primary font-weight-bold"><i class="fas fa-robot mr-1"></i>AI Assistant</small>
@@ -113,8 +121,8 @@
 
 @push('js')
 <script>
-const sendBtn      = document.getElementById('send-btn');
-const userInput    = document.getElementById('user-input');
+const sendBtn       = document.getElementById('send-btn');
+const userInput     = document.getElementById('user-input');
 const chatContainer = document.getElementById('chat-container');
 
 sendBtn.addEventListener('click', sendMessage);
@@ -134,7 +142,6 @@ function sendMessage() {
     const welcome = document.getElementById('welcome-screen');
     if (welcome) welcome.remove();
 
-    // Tampilkan pesan user
     chatContainer.innerHTML += `
         <div class="d-flex justify-content-end mb-3">
             <div class="bg-primary text-white p-3 rounded" style="max-width:70%; border-radius:15px 15px 0 15px !important;">
@@ -142,7 +149,6 @@ function sendMessage() {
             </div>
         </div>`;
 
-    // Tampilkan loading AI
     const aiId = 'ai-' + Date.now();
     chatContainer.innerHTML += `
         <div class="d-flex justify-content-start mb-3" id="${aiId}">
@@ -172,7 +178,6 @@ function sendMessage() {
             return;
         }
 
-        // Efek typewriter
         aiDiv.querySelector('p').innerHTML = '';
         let index = 0;
         const p = aiDiv.querySelector('p');

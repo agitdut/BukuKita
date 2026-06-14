@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     // Chat AI
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+    Route::delete('/chat/clear', [ChatController::class, 'clearHistory'])->name('chat.clear');
 });
 
 require __DIR__.'/auth.php';
