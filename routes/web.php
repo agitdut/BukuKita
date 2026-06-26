@@ -21,18 +21,20 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Books
+    // Books - Admin & Staff
     Route::get('/books/fetch-isbn', [BookController::class, 'fetchByIsbn'])->name('books.fetch-isbn');
     Route::resource('books', BookController::class);
 
-    // Loans
+    // Loans - Admin & Staff
     Route::resource('loans', LoanController::class)->except(['edit', 'update', 'destroy']);
     Route::post('/loans/{loan}/return', [LoanController::class, 'return'])->name('loans.return');
 
-    // Users
-    Route::resource('users', UserController::class);
+    // Users - Hanya Admin
+    Route::middleware('role:admin')->group(function () {
+        Route::resource('users', UserController::class);
+    });
 
-    // Chat AI
+    // Chat AI - Admin & Staff
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
     Route::delete('/chat/clear', [ChatController::class, 'clearHistory'])->name('chat.clear');

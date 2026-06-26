@@ -14,23 +14,23 @@ class DummyDataSeeder extends Seeder
 {
     public function run(): void
     {
-        // Tambah user anggota
-        $memberRole = Role::findByName('member');
+        // Tambah user staff tambahan
+        $staffRole = Role::findByName('staff');
 
-        $members = [
-            ['name' => 'Budi Santoso',   'email' => 'budi@example.com'],
-            ['name' => 'Siti Rahayu',    'email' => 'siti@example.com'],
-            ['name' => 'Ahmad Fauzi',    'email' => 'ahmad@example.com'],
-            ['name' => 'Dewi Lestari',   'email' => 'dewi@example.com'],
-            ['name' => 'Rizky Pratama',  'email' => 'rizky@example.com'],
+        $staffs = [
+            ['name' => 'Budi Santoso',  'email' => 'budi@example.com'],
+            ['name' => 'Siti Rahayu',   'email' => 'siti@example.com'],
+            ['name' => 'Ahmad Fauzi',   'email' => 'ahmad@example.com'],
+            ['name' => 'Dewi Lestari',  'email' => 'dewi@example.com'],
+            ['name' => 'Rizky Pratama', 'email' => 'rizky@example.com'],
         ];
 
-        foreach ($members as $member) {
+        foreach ($staffs as $staff) {
             $user = User::firstOrCreate(
-                ['email' => $member['email']],
-                ['name' => $member['name'], 'password' => Hash::make('password')]
+                ['email' => $staff['email']],
+                ['name' => $staff['name'], 'password' => Hash::make('password')]
             );
-            $user->assignRole($memberRole);
+            $user->assignRole($staffRole);
         }
 
         // Tambah buku dummy
@@ -96,7 +96,7 @@ class DummyDataSeeder extends Seeder
         }
 
         // Tambah data peminjaman dummy
-        $users = User::role('member')->get();
+        $users = User::role('staff')->get();
         $allBooks = Book::all();
 
         $loanData = [

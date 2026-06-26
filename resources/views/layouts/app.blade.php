@@ -73,6 +73,7 @@
       <nav class="mt-2">
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
+          {{-- Dashboard - Semua --}}
           <li class="nav-item">
             <a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
               <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -80,6 +81,7 @@
             </a>
           </li>
 
+          {{-- Daftar Buku - Semua --}}
           <li class="nav-item">
             <a href="{{ route('books.index') }}" class="nav-link {{ request()->routeIs('books.*') ? 'active' : '' }}">
               <i class="nav-icon fas fa-book"></i>
@@ -87,6 +89,7 @@
             </a>
           </li>
 
+          {{-- Peminjaman - Semua --}}
           <li class="nav-item">
             <a href="{{ route('loans.index') }}" class="nav-link {{ request()->routeIs('loans.*') ? 'active' : '' }}">
               <i class="nav-icon fas fa-hand-holding-heart"></i>
@@ -94,13 +97,17 @@
             </a>
           </li>
 
+          {{-- Manajemen User - Hanya Admin --}}
+          @role('admin')
           <li class="nav-item">
             <a href="{{ route('users.index') }}" class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
               <i class="nav-icon fas fa-users"></i>
               <p>Manajemen User</p>
             </a>
           </li>
+          @endrole
 
+          {{-- AI Assistant - Semua --}}
           <li class="nav-item">
             <a href="{{ route('chat.index') }}" class="nav-link {{ request()->routeIs('chat.*') ? 'active' : '' }}">
               <i class="nav-icon fas fa-robot"></i>
