@@ -34,10 +34,6 @@ Route::middleware('auth')->group(function () {
         Route::resource('users', UserController::class);
     });
 
-    // Chat AI - Admin & Staff
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-    Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
-    Route::delete('/chat/clear', [ChatController::class, 'clearHistory'])->name('chat.clear');
 });
 
 require __DIR__.'/auth.php';
