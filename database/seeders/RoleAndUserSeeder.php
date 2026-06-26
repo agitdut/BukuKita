@@ -33,6 +33,10 @@ class RoleAndUserSeeder extends Seeder
             'view loans',
             'create loans'
         ]);
+        
+        $memberRole = Role::firstOrCreate(['name' => 'member']);
+        $memberRole->givePermissionTo(['view books']);
+
 
         // 3. Buat User
         $admin = User::firstOrCreate(
@@ -46,5 +50,12 @@ class RoleAndUserSeeder extends Seeder
             ['name' => 'Staff User', 'password' => Hash::make('password')]
         );
         $staff->assignRole($staffRole);
+
+        $member = User::firstOrCreate(
+            ['email' => 'member@example.com'],
+            ['name' => 'Member User', 'password' => Hash::make('password')]
+        );
+        $member->assignRole($memberRole);
+
     }
 }

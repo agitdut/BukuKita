@@ -14,10 +14,10 @@ class DummyDataSeeder extends Seeder
 {
     public function run(): void
     {
-        // Tambah user staff tambahan
-        $staffRole = Role::findByName('staff');
+        // Tambah user member tambahan
+        $memberRole = Role::findByName('member');
 
-        $staffs = [
+        $members = [
             ['name' => 'Budi Santoso',  'email' => 'budi@example.com'],
             ['name' => 'Siti Rahayu',   'email' => 'siti@example.com'],
             ['name' => 'Ahmad Fauzi',   'email' => 'ahmad@example.com'],
@@ -25,12 +25,12 @@ class DummyDataSeeder extends Seeder
             ['name' => 'Rizky Pratama', 'email' => 'rizky@example.com'],
         ];
 
-        foreach ($staffs as $staff) {
+        foreach ($members as $member) {
             $user = User::firstOrCreate(
-                ['email' => $staff['email']],
-                ['name' => $staff['name'], 'password' => Hash::make('password')]
+                ['email' => $member['email']],
+                ['name' => $member['name'], 'password' => Hash::make('password')]
             );
-            $user->assignRole($staffRole);
+            $user->assignRole($memberRole);
         }
 
         // Tambah buku dummy
@@ -96,7 +96,7 @@ class DummyDataSeeder extends Seeder
         }
 
         // Tambah data peminjaman dummy
-        $users = User::role('staff')->get();
+        $users = User::role('member')->get();
         $allBooks = Book::all();
 
         $loanData = [

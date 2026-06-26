@@ -21,20 +21,30 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Books - Admin & Staff
+    // Books - Admin & Staff full akses, Member hanya lihat
     Route::get('/books/fetch-isbn', [BookController::class, 'fetchByIsbn'])->name('books.fetch-isbn');
-    Route::resource('books', BookController::class);
+    Route::get('/books', [BookController::class, 'index'])->name('books.index');
+    Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
+    Route::middleware('role:admin|staff')->group(function () {
+        Route::get('/books/create', [BookController::class, 'create'])->name('books.create');
+        Route::post('/books', [BookController::class, 'store'])->name('books.store');
+        Route::get('/books/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
+        Route::put('/books/{book}', [BookController::class, 'update'])->name('books.update');
+        Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
+    });
 
-    // Loans - Admin & Staff
-    Route::resource('loans', LoanController::class)->except(['edit', 'update', 'destroy']);
-    Route::post('/loans/{loan}/return', [LoanController::class, 'return'])->name('loans.return');
+    // Loans - Hanya Admin & Staff
+    Route::middleware('role:admin|staff')->group(function () {
+        Route::resource('loans', LoanController::class)->except(['edit', 'update', 'destroy']);
+        Route::post('/loans/{loan}/return', [LoanController::class, 'return'])->name('loans.return');
+    });
 
     // Users - Hanya Admin
     Route::middleware('role:admin')->group(function () {
         Route::resource('users', UserController::class);
     });
 
-    // Chat AI - Admin & Staff
+    // Chat AI - Semua role bisa akses
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
     Route::delete('/chat/clear', [ChatController::class, 'clearHistory'])->name('chat.clear');
