@@ -11,6 +11,138 @@
   <link rel="stylesheet" href="{{ asset('dist/css/adminlte.min.css') }}">
   <link rel="stylesheet" href="{{ asset('plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
 
+  <style>
+    :root {
+      --library-green: #1b4332;
+      --library-green-dark: #0d2818;
+      --library-gold: #c9a227;
+      --library-gold-light: #e0c46c;
+      --library-cream: #f8f4e9;
+    }
+
+    body {
+      background-color: var(--library-cream) !important;
+    }
+
+    .main-sidebar {
+      background: linear-gradient(180deg, var(--library-green) 0%, var(--library-green-dark) 100%) !important;
+    }
+
+    .brand-link {
+      background-color: var(--library-green-dark) !important;
+      border-bottom: 2px solid var(--library-gold) !important;
+    }
+
+    .brand-text {
+      color: var(--library-gold-light) !important;
+      font-weight: 600 !important;
+    }
+
+    .nav-sidebar > .nav-item > .nav-link.active {
+      background-color: var(--library-gold) !important;
+      color: var(--library-green-dark) !important;
+      font-weight: 600;
+    }
+
+    .nav-sidebar .nav-link {
+      color: #e8e8e8 !important;
+    }
+
+    .nav-sidebar .nav-link:hover {
+      background-color: rgba(201, 162, 39, 0.2) !important;
+    }
+
+    .nav-icon {
+      color: var(--library-gold-light) !important;
+    }
+
+    .nav-link.active .nav-icon {
+      color: var(--library-green-dark) !important;
+    }
+
+    .main-header.navbar {
+      background-color: white !important;
+      border-bottom: 3px solid var(--library-gold) !important;
+    }
+
+    .card {
+      border-top: 3px solid var(--library-green) !important;
+      box-shadow: 0 2px 8px rgba(27, 67, 50, 0.1) !important;
+    }
+
+    .card-header {
+      background-color: rgba(27, 67, 50, 0.03) !important;
+    }
+
+    .card-title {
+      color: var(--library-green) !important;
+    }
+
+    .btn-primary {
+      background-color: var(--library-green) !important;
+      border-color: var(--library-green) !important;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--library-green-dark) !important;
+      border-color: var(--library-green-dark) !important;
+    }
+
+    .btn-warning {
+      background-color: var(--library-gold) !important;
+      border-color: var(--library-gold) !important;
+      color: white !important;
+    }
+
+    .small-box.bg-info {
+      background-color: var(--library-green) !important;
+    }
+
+    .small-box.bg-success {
+      background-color: #2d6a4f !important;
+    }
+
+    .small-box.bg-warning {
+      background-color: var(--library-gold) !important;
+    }
+
+    .small-box.bg-danger {
+      background-color: #8b4513 !important;
+    }
+
+    .badge-success {
+      background-color: #2d6a4f !important;
+    }
+
+    .badge-warning {
+      background-color: var(--library-gold) !important;
+    }
+
+    .table thead th {
+      background-color: var(--library-green) !important;
+      color: white !important;
+      border: none !important;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+      background-color: rgba(201, 162, 39, 0.05) !important;
+    }
+
+    .main-footer {
+      background-color: white !important;
+      border-top: 2px solid var(--library-gold) !important;
+      color: var(--library-green) !important;
+    }
+
+    .breadcrumb-item.active {
+      color: var(--library-gold) !important;
+    }
+
+    .user-panel {
+      border-bottom: 1px solid rgba(201, 162, 39, 0.3) !important;
+    }
+  </style>
+
   @stack('css')
 </head>
 <body class="hold-transition sidebar-mini layout-fixed">

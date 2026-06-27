@@ -22,6 +22,7 @@
             </div>
         </div>
 
+        @role('admin|staff')
         <div class="col-lg-3 col-6">
             <div class="small-box bg-success">
                 <div class="inner">
@@ -51,7 +52,9 @@
                 </a>
             </div>
         </div>
+        @endrole
 
+        @role('admin')
         <div class="col-lg-3 col-6">
             <div class="small-box bg-danger">
                 <div class="inner">
@@ -66,10 +69,28 @@
                 </a>
             </div>
         </div>
+        @endrole
+
+        @role('member')
+        <div class="col-lg-3 col-6">
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ $myLoans->where('status', 'borrowed')->count() }}</h3>
+                    <p>Buku Sedang Dipinjam</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-hand-holding-heart"></i>
+                </div>
+                <a href="#" class="small-box-footer">
+                    Lihat Riwayat <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+        @endrole
     </div>
 
     <div class="row">
-        <!-- Peminjaman Terbaru -->
+        @role('admin|staff')
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
@@ -111,8 +132,60 @@
                 </div>
             </div>
         </div>
+        @endrole
 
-        <!-- Buku Terbaru -->
+        @role('member')
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title"><i class="fas fa-history mr-1"></i> Riwayat Peminjaman Saya</h3>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Buku</th>
+                                <th>Tgl Pinjam</th>
+                                <th>Tgl Kembali</th>
+                                <th>Status</th>
+                                <th>Denda</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($myLoans as $loan)
+                            <tr>
+                                <td>{{ $loan->book->title }}</td>
+                                <td>{{ $loan->loan_date->format('d/m/Y') }}</td>
+                                <td>{{ $loan->due_date->format('d/m/Y') }}</td>
+                                <td>
+                                    @if($loan->status == 'borrowed')
+                                        <span class="badge badge-warning">Dipinjam</span>
+                                    @elseif($loan->status == 'returned')
+                                        <span class="badge badge-success">Dikembalikan</span>
+                                    @else
+                                        <span class="badge badge-danger">Terlambat</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($loan->fine > 0)
+                                        <span class="text-danger">Rp {{ number_format($loan->fine, 0, ',', '.') }}</span>
+                                    @else
+                                        <span class="text-success">-</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="5" class="text-center">Anda belum pernah meminjam buku.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        @endrole
+
         <div class="col-md-4">
             <div class="card">
                 <div class="card-header">
@@ -123,9 +196,13 @@
                         @forelse($recentBooks as $book)
                         <li class="item">
                             <div class="product-info">
+                                @role('admin|staff')
                                 <a href="{{ route('books.edit', $book) }}" class="product-title">
                                     {{ $book->title }}
                                 </a>
+                                @else
+                                <span class="product-title">{{ $book->title }}</span>
+                                @endrole
                                 <span class="product-description">
                                     {{ $book->author }} | Stok: {{ $book->stock }}
                                 </span>

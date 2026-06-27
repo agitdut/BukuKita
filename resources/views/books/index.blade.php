@@ -8,11 +8,11 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Data Buku Perpustakaan</h3>
-            @can('create books')
+            @role('admin|staff')
             <a href="{{ route('books.create') }}" class="btn btn-primary btn-sm">
                 <i class="fas fa-plus"></i> Tambah Buku
             </a>
-            @endcan
+            @endrole
         </div>
         <div class="card-body">
             @if(session('success'))
@@ -29,7 +29,9 @@
                         <th>Penulis</th>
                         <th>Penerbit</th>
                         <th>Stok</th>
+                        @role('admin|staff')
                         <th>Aksi</th>
+                        @endrole
                     </tr>
                 </thead>
                 <tbody>
@@ -52,11 +54,12 @@
                                 {{ $book->stock }}
                             </span>
                         </td>
+                        @role('admin|staff')
                         <td>
                             <a href="{{ route('books.edit', $book) }}" class="btn btn-warning btn-sm">
                                 <i class="fas fa-edit"></i> Edit
                             </a>
-                            @can('delete books')
+                            @role('admin')
                             <form action="{{ route('books.destroy', $book) }}" method="POST" class="d-inline"
                                 onsubmit="return confirm('Yakin ingin menghapus buku ini?')">
                                 @csrf
@@ -65,8 +68,9 @@
                                     <i class="fas fa-trash"></i> Hapus
                                 </button>
                             </form>
-                            @endcan
+                            @endrole
                         </td>
+                        @endrole
                     </tr>
                     @empty
                     <tr>
