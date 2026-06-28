@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Book;
 use App\Models\Loan;
 use App\Models\User;
-
+use Carbon\Carbon;
 class DashboardController extends Controller
 {
     public function index()
@@ -19,6 +19,13 @@ class DashboardController extends Controller
             $data['totalLoans']  = Loan::count();
             $data['activeLoans'] = Loan::where('status', 'borrowed')->count();
             $data['recentLoans'] = Loan::with(['user', 'book'])->latest()->take(5)->get();
+
+             // Ambil buku yang sudah melewati jatuh tempo dan belum dikembalikan
+            $data['overdueLoans'] = Loan::with(['user', 'book'])
+                ->where('status', 'borrowed')
+                ->where('due_date', '<', Carbon::today())
+                ->orderBy('due_date', 'asc')
+                ->get();
         }
 
         if (auth()->user()->hasRole('admin')) {

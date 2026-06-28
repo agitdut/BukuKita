@@ -26,31 +26,39 @@ class LoanController extends Controller
     }
 
     // Simpan peminjaman baru
-    public function store(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'book_id' => 'required|exists:books,id',
-            'loan_date' => 'required|date',
-            'due_date'  => 'required|date|after:loan_date',
-        ]);
+    // Simpan peminjaman baru
+public function store(Request $request)
+{
+    $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'book_id' => 'required|exists:books,id',
+        'loan_date' => 'required|date',
+        'due_date'  => 'required|date|after:loan_date',
+    ]);
 
-        // Kurangi stok buku
-        $book = Book::findOrFail($request->book_id);
-        $book->decrement('stock');
+    $book = Book::findOrFail($request->book_id);
 
-        Loan::create([
-            'user_id'   => $request->user_id,
-            'book_id'   => $request->book_id,
-            'loan_date' => $request->loan_date,
-            'due_date'  => $request->due_date,
-            'status'    => 'borrowed',
-            'fine'      => 0,
-        ]);
-
-        return redirect()->route('loans.index')
-            ->with('success', 'Peminjaman berhasil dicatat!');
+    // Validasi stok sebelum proses peminjaman
+    if ($book->stock <= 0) {
+        return redirect()->route('loans.create')
+            ->with('error', 'Stok buku "' . $book->title . '" sudah habis, tidak bisa dipinjam!');
     }
+
+    // Kurangi stok buku
+    $book->decrement('stock');
+
+    Loan::create([
+        'user_id'   => $request->user_id,
+        'book_id'   => $request->book_id,
+        'loan_date' => $request->loan_date,
+        'due_date'  => $request->due_date,
+        'status'    => 'borrowed',
+        'fine'      => 0,
+    ]);
+
+    return redirect()->route('loans.index')
+        ->with('success', 'Peminjaman berhasil dicatat!');
+}
 
     // Proses pengembalian buku
     public function return(Loan $loan)

@@ -5,6 +5,28 @@
 @endsection
 
 @section('content')
+
+    @role('admin|staff')
+    @if($overdueLoans->count() > 0)
+    <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+        <h5><i class="icon fas fa-exclamation-triangle"></i> Perhatian! Ada {{ $overdueLoans->count() }} buku yang terlambat dikembalikan:</h5>
+        <ul class="mb-0 mt-2">
+            @foreach($overdueLoans->take(5) as $loan)
+            <li>
+                <strong>{{ $loan->book->title }}</strong> dipinjam oleh <strong>{{ $loan->user->name }}</strong>
+                — jatuh tempo {{ $loan->due_date->format('d/m/Y') }}
+                ({{ $loan->due_date->diffInDays(\Carbon\Carbon::today()) }} hari terlambat)
+            </li>
+            @endforeach
+        </ul>
+        @if($overdueLoans->count() > 5)
+        <small class="text-muted">dan {{ $overdueLoans->count() - 5 }} lainnya...</small>
+        @endif
+    </div>
+    @endif
+    @endrole
+
     <!-- Statistik Cards -->
     <div class="row">
         <div class="col-lg-3 col-6">
