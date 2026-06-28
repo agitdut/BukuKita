@@ -1,58 +1,112 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 📚 BukuKita
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem Informasi Perpustakaan Kampus berbasis web yang dibangun dengan Laravel, dilengkapi otomasi pengisian data buku dan asisten AI menggunakan **Groq AI (Llama 3.3-70B)**.
 
-## About Laravel
+Project ini dibuat sebagai **Ujian Akhir Semester (UAS)** mata kuliah Pemrograman Web Lanjut.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Fitur Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- 🔐 **Autentikasi & Role-Based Access Control** — 3 peran pengguna (Admin, Staff, Member) dengan hak akses berbeda menggunakan Spatie Permission
+- 📊 **Dashboard Dinamis** — statistik real-time yang menyesuaikan tampilan berdasarkan role pengguna
+- 📖 **Manajemen Buku** — CRUD lengkap dengan **auto-fill data buku otomatis** cukup dengan memasukkan ISBN (ditenagai Groq AI)
+- 🔍 **Pencarian & Filter Buku** — cari berdasarkan judul, penulis, atau ISBN
+- 🔄 **Peminjaman & Pengembalian** — pencatatan transaksi dengan validasi stok dan **perhitungan denda otomatis** untuk keterlambatan
+- ⚠️ **Notifikasi Keterlambatan** — peringatan visual di dashboard untuk buku yang belum dikembalikan melewati jatuh tempo
+- 👥 **Manajemen Anggota** — admin dapat mendaftarkan dan mengelola data pengguna beserta perannya
+- 🤖 **AI Assistant** — chatbot interaktif yang dapat menjawab pertanyaan seputar koleksi buku dan informasi perpustakaan
+- 🎨 **Tema Akademis Custom** — tampilan hijau tua & gold yang disesuaikan dari template AdminLTE
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 🛠️ Tech Stack
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Kategori | Teknologi |
+|---|---|
+| Framework | Laravel 13 |
+| Frontend / UI | AdminLTE 3.2.0, Bootstrap |
+| Autentikasi | Laravel Breeze |
+| Role & Permission | Spatie Laravel Permission |
+| AI Engine | Groq AI — Llama 3.3-70B Versatile |
+| Database | MySQL |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## 👤 Role & Hak Akses
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+| Fitur | Admin | Staff | Member |
+|---|:---:|:---:|:---:|
+| Lihat Katalog Buku | ✅ | ✅ | ✅ |
+| Kelola Buku (Tambah/Edit) | ✅ | ✅ | ❌ |
+| Hapus Buku | ✅ | ❌ | ❌ |
+| Kelola Peminjaman | ✅ | ✅ | ❌ |
+| Lihat Riwayat Peminjaman Sendiri | — | — | ✅ |
+| Manajemen User | ✅ | ❌ | ❌ |
+| AI Assistant | ✅ | ✅ | ✅ |
+
+---
+
+## ⚙️ Instalasi
 
 ```bash
-composer require laravel/boost --dev
+# Clone repository
+git clone https://github.com/agitdut/bukukita.git
+cd bukukita
 
-php artisan boost:install
+# Install dependencies
+composer install
+npm install
+
+# Setup environment
+cp .env.example .env
+php artisan key:generate
+
+# Konfigurasi database & Groq API Key di file .env
+# DB_DATABASE=bukukita
+# GROQ_API_KEY=isi_api_key_groq_anda
+
+# Migrasi & seeding database
+php artisan migrate --seed
+php artisan db:seed --class=DummyDataSeeder
+
+# Jalankan server
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 🔑 Akun Demo
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Role | Email | Password |
+|---|---|---|
+| Admin | admin@gmail.com | password |
+| Staff | staff@gmail.com | password |
+| Member | budi@gmail.com | password |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 📁 Struktur Modul
 
-## Security Vulnerabilities
+```
+app/Http/Controllers/
+├── BookController.php       # CRUD buku & integrasi Groq AI untuk auto-fill ISBN
+├── LoanController.php       # Transaksi peminjaman, pengembalian, & denda
+├── UserController.php       # Manajemen anggota
+├── ChatController.php       # AI Assistant perpustakaan
+└── DashboardController.php  # Statistik & notifikasi per role
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 👨‍🎓 Dibuat oleh
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Agit**
+NIM: 251351005
+Universitas Wastukancana
+
+---
+
+## 📄 Lisensi
+
+Project ini dibuat untuk keperluan akademik (UAS).
