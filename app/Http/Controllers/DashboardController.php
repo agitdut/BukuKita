@@ -22,10 +22,11 @@ class DashboardController extends Controller
 
              // Ambil buku yang sudah melewati jatuh tempo dan belum dikembalikan
             $data['overdueLoans'] = Loan::with(['user', 'book'])
-                ->where('status', 'borrowed')
-                ->where('due_date', '<', Carbon::today())
-                ->orderBy('due_date', 'asc')
-                ->get();
+            ->whereIn('status', ['borrowed', 'overdue'])
+            ->where('due_date', '<', Carbon::today())
+            ->whereNull('return_date')
+            ->orderBy('due_date', 'asc')
+            ->get();
         }
 
         if (auth()->user()->hasRole('admin')) {
