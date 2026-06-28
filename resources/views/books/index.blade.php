@@ -19,6 +19,25 @@
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
 
+            <!-- Search Form -->
+            <form action="{{ route('books.index') }}" method="GET" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control"
+                        placeholder="Cari judul, penulis, atau ISBN..."
+                        value="{{ $search }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fas fa-search"></i> Cari
+                        </button>
+                        @if($search)
+                        <a href="{{ route('books.index') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Reset
+                        </a>
+                        @endif
+                    </div>
+                </div>
+            </form>
+
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>

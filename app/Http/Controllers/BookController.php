@@ -8,11 +8,21 @@ use Illuminate\Support\Facades\Http;
 
 class BookController extends Controller
 {
-    public function index()
-    {
-        $books = Book::latest()->paginate(10);
-        return view('books.index', compact('books'));
-    }
+    public function index(Request $request)
+{
+    $search = $request->input('search');
+
+    $books = Book::when($search, function ($query, $search) {
+            $query->where('title', 'like', "%{$search}%")
+                  ->orWhere('author', 'like', "%{$search}%")
+                  ->orWhere('isbn', 'like', "%{$search}%");
+        })
+        ->latest()
+        ->paginate(10)
+        ->withQueryString();
+
+    return view('books.index', compact('books', 'search'));
+}
 
     public function create()
     {
