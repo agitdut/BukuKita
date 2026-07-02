@@ -11,10 +11,30 @@ use Carbon\Carbon;
 class LoanController extends Controller
 {
     // Daftar semua peminjaman
-    public function index()
+    public function index(Request $request)
     {
-        $loans = Loan::with(['user', 'book'])->latest()->paginate(10);
-        return view('loans.index', compact('loans'));
+        Loan::where('status', 'borrowed')
+            ->where('due_date', '<', Carbon::now())
+            ->update(['status' => 'overdue']);
+
+        $search = $request->input('search');
+
+        $loans = Loan::with(['user', 'book'])
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->whereHas('user', function ($u) use ($search) {
+                        $u->where('name', 'like', "%{$search}%");
+                    })->orWhereHas('book', function ($b) use ($search) {
+                        $b->where('title', 'like', "%{$search}%")
+                          ->orWhere('isbn', 'like', "%{$search}%");
+                    });
+                });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('loans.index', compact('loans', 'search'));
     }
 
     // Form tambah peminjaman
@@ -68,7 +88,7 @@ public function store(Request $request)
 
         // Hitung denda jika terlambat (Rp 1.000 per hari)
         if ($returnDate->gt($loan->due_date)) {
-            $daysLate = $returnDate->diffInDays($loan->due_date);
+            $daysLate = (int) ceil((float) $returnDate->diffInDays($loan->due_date, true));
             $fine = $daysLate * 1000;
         }
 

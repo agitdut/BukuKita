@@ -47,6 +47,17 @@
                 <textarea name="description" class="form-control" rows="4">{{ old('description', $book->description) }}</textarea>
             </div>
             <div class="form-group">
+                <label>Kategori</label>
+                <select name="categories[]" class="form-control" multiple>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ in_array($category->id, old('categories', $book->categories->pluck('id')->toArray())) ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <small class="text-muted">Tahan Ctrl untuk pilih lebih dari satu</small>
+            </div>
+            <div class="form-group">
                 <label>Stok *</label>
                 <input type="number" name="stock" class="form-control" value="{{ old('stock', $book->stock) }}" min="1" required>
                 @error('stock') <span class="text-danger">{{ $message }}</span> @enderror

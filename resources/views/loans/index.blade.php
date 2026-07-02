@@ -17,6 +17,15 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
+        <form method="GET" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control" placeholder="Cari peminjam, judul buku, atau ISBN..." value="{{ request('search') }}">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i> Cari</button>
+                </div>
+            </div>
+        </form>
+
         <table class="table table-bordered table-striped">
             <thead>
                 <tr>

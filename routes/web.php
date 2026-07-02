@@ -24,14 +24,12 @@ Route::middleware('auth')->group(function () {
         // Books - Admin & Staff full akses, Member hanya lihat
     Route::get('/books/fetch-isbn', [BookController::class, 'fetchByIsbn'])->name('books.fetch-isbn');
     Route::get('/books', [BookController::class, 'index'])->name('books.index');
-
-    Route::middleware('role:admin|staff')->group(function () {
-        Route::get('/books/create', [BookController::class, 'create'])->name('books.create');
-        Route::post('/books', [BookController::class, 'store'])->name('books.store');
-        Route::get('/books/{book}/edit', [BookController::class, 'edit'])->name('books.edit');
-        Route::put('/books/{book}', [BookController::class, 'update'])->name('books.update');
-        Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy');
-    });
+    Route::get('/books/create', [BookController::class, 'create'])->name('books.create')->middleware('role:admin|staff');
+    Route::post('/books', [BookController::class, 'store'])->name('books.store')->middleware('role:admin|staff');
+    Route::get('/books/{book}', [BookController::class, 'show'])->name('books.show');
+    Route::get('/books/{book}/edit', [BookController::class, 'edit'])->name('books.edit')->middleware('role:admin|staff');
+    Route::put('/books/{book}', [BookController::class, 'update'])->name('books.update')->middleware('role:admin|staff');
+    Route::delete('/books/{book}', [BookController::class, 'destroy'])->name('books.destroy')->middleware('role:admin');
 
     // Loans - Hanya Admin & Staff
     Route::middleware('role:admin|staff')->group(function () {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Book;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -12,10 +13,13 @@ class BookController extends Controller
 {
     $search = $request->input('search');
 
-    $books = Book::when($search, function ($query, $search) {
-            $query->where('title', 'like', "%{$search}%")
+    $books = Book::with('categories')
+        ->when($search, function ($query, $search) {
+            return $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
                   ->orWhere('author', 'like', "%{$search}%")
                   ->orWhere('isbn', 'like', "%{$search}%");
+            });
         })
         ->latest()
         ->paginate(10)
@@ -24,20 +28,33 @@ class BookController extends Controller
     return view('books.index', compact('books', 'search'));
 }
 
+    public function show(Book $book)
+    {
+        $book->load('categories');
+        return view('books.show', compact('book'));
+    }
+
     public function create()
     {
-        return view('books.create');
+        $categories = Category::orderBy('name')->get();
+        return view('books.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'isbn'  => 'required|unique:books,isbn',
-            'title' => 'required',
-            'stock' => 'required|integer|min:1',
+            'isbn'        => 'required|unique:books,isbn',
+            'title'       => 'required',
+            'stock'       => 'required|integer|min:1',
+            'categories'   => 'nullable|array',
+            'categories.*' => 'exists:categories,id',
         ]);
 
-        Book::create($request->all());
+        $book = Book::create($request->all());
+
+        if ($request->has('categories')) {
+            $book->categories()->sync($request->categories);
+        }
 
         return redirect()->route('books.index')
             ->with('success', 'Buku berhasil ditambahkan!');
@@ -45,18 +62,28 @@ class BookController extends Controller
 
     public function edit(Book $book)
     {
-        return view('books.edit', compact('book'));
+        $categories = Category::orderBy('name')->get();
+        $book->load('categories');
+        return view('books.edit', compact('book', 'categories'));
     }
 
     public function update(Request $request, Book $book)
     {
         $request->validate([
-            'isbn'  => 'required|unique:books,isbn,' . $book->id,
-            'title' => 'required',
-            'stock' => 'required|integer|min:1',
+            'isbn'        => 'required|unique:books,isbn,' . $book->id,
+            'title'       => 'required',
+            'stock'       => 'required|integer|min:1',
+            'categories'   => 'nullable|array',
+            'categories.*' => 'exists:categories,id',
         ]);
 
         $book->update($request->all());
+
+        if ($request->has('categories')) {
+            $book->categories()->sync($request->categories);
+        } else {
+            $book->categories()->detach();
+        }
 
         return redirect()->route('books.index')
             ->with('success', 'Buku berhasil diupdate!');
@@ -72,25 +99,13 @@ class BookController extends Controller
     public function fetchByIsbn(Request $request)
     {
         $isbn = $request->input('isbn');
-        $apiKey = env('GROQ_API_KEY');
 
         $response = Http::withOptions([
             'verify' => false,
-        ])->withHeaders([
-            'Authorization' => 'Bearer ' . $apiKey,
-            'Content-Type'  => 'application/json',
-        ])->post('https://api.groq.com/openai/v1/chat/completions', [
-            'model'    => 'llama-3.3-70b-versatile',
-            'messages' => [
-                [
-                    'role'    => 'system',
-                    'content' => 'You are a book database assistant. When given an ISBN, return ONLY a valid JSON object with these fields: title, author, publisher, published_year, description. No explanation, no markdown, just pure JSON.'
-                ],
-                [
-                    'role'    => 'user',
-                    'content' => 'Give me book information for ISBN: ' . $isbn
-                ]
-            ],
+        ])->get('https://openlibrary.org/api/books', [
+            'bibkeys' => 'ISBN:' . $isbn,
+            'jscmd'   => 'data',
+            'format'  => 'json',
         ]);
 
         if ($response->failed()) {
@@ -98,25 +113,35 @@ class BookController extends Controller
         }
 
         $data = $response->json();
-        $text = $data['choices'][0]['message']['content'] ?? null;
+        $key = 'ISBN:' . $isbn;
+        $bookData = $data[$key] ?? null;
 
-        if (!$text) {
+        if (!$bookData) {
             return response()->json(['error' => 'Buku tidak ditemukan'], 404);
         }
 
-        $bookData = json_decode($text, true);
+        $details = $bookData['details'] ?? $bookData;
+        $desc = '';
+        if (isset($details['description'])) {
+            $desc = is_array($details['description'])
+                ? ($details['description']['value'] ?? '')
+                : $details['description'];
+        }
 
-        if (!$bookData) {
-            return response()->json(['error' => 'Format data tidak valid'], 500);
+        $cover = '';
+        if (!empty($bookData['cover']['medium'])) {
+            $cover = $bookData['cover']['medium'];
         }
 
         return response()->json([
-            'title'          => $bookData['title'] ?? '',
-            'author'         => $bookData['author'] ?? '',
-            'publisher'      => $bookData['publisher'] ?? '',
-            'published_year' => $bookData['published_year'] ?? '',
-            'description'    => $bookData['description'] ?? '',
-            'cover_image'    => '',
+            'title'          => $details['title'] ?? '',
+            'author'         => $details['authors'][0]['name'] ?? '',
+            'publisher'      => $details['publishers'][0]['name'] ?? '',
+            'published_year' => $details['publish_date']
+                ? (preg_match('/\d{4}/', $details['publish_date'], $matches) ? $matches[0] : $details['publish_date'])
+                : '',
+            'description'    => $desc,
+            'cover_image'    => $cover,
         ]);
     }
 }

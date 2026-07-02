@@ -47,6 +47,7 @@
                         <th>Judul</th>
                         <th>Penulis</th>
                         <th>Penerbit</th>
+                        <th>Kategori</th>
                         <th>Stok</th>
                         @role('admin|staff')
                         <th>Aksi</th>
@@ -65,9 +66,20 @@
                             @endif
                         </td>
                         <td>{{ $book->isbn }}</td>
-                        <td>{{ $book->title }}</td>
+                        <td>
+                            <a href="{{ route('books.show', $book) }}" class="text-[#1b4332] font-weight-bold">
+                                {{ $book->title }}
+                            </a>
+                        </td>
                         <td>{{ $book->author }}</td>
                         <td>{{ $book->publisher }}</td>
+                        <td>
+                            @forelse($book->categories as $category)
+                                <span class="badge badge-info">{{ $category->name }}</span>
+                            @empty
+                                <span class="badge badge-secondary">-</span>
+                            @endforelse
+                        </td>
                         <td>
                             <span class="badge {{ $book->stock > 0 ? 'badge-success' : 'badge-danger' }}">
                                 {{ $book->stock }}
@@ -75,8 +87,11 @@
                         </td>
                         @role('admin|staff')
                         <td>
+                            <a href="{{ route('books.show', $book) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
                             <a href="{{ route('books.edit', $book) }}" class="btn btn-warning btn-sm">
-                                <i class="fas fa-edit"></i> Edit
+                                <i class="fas fa-edit"></i>
                             </a>
                             @role('admin')
                             <form action="{{ route('books.destroy', $book) }}" method="POST" class="d-inline"
@@ -84,7 +99,7 @@
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash"></i> Hapus
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </form>
                             @endrole
@@ -93,7 +108,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center">Belum ada data buku.</td>
+                        <td colspan="9" class="text-center">Belum ada data buku.</td>
                     </tr>
                     @endforelse
                 </tbody>

@@ -118,6 +118,21 @@
       background-color: var(--library-gold) !important;
     }
 
+    .badge-info {
+      background-color: #2d6a4f !important;
+    }
+
+    .btn-info {
+      background-color: #2d6a4f !important;
+      border-color: #2d6a4f !important;
+      color: white !important;
+    }
+
+    .btn-info:hover {
+      background-color: #1b4332 !important;
+      border-color: #1b4332 !important;
+    }
+
     .table thead th {
       background-color: var(--library-green) !important;
       color: white !important;

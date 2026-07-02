@@ -22,7 +22,7 @@
                     </button>
                 </div>
             </div>
-            <small class="text-muted">Data akan terisi otomatis dari Google Books</small>
+            <small class="text-muted">Data akan terisi otomatis dari Open Library</small>
         </div>
 
         <hr>
@@ -61,6 +61,17 @@
             <div class="form-group">
                 <label>Deskripsi</label>
                 <textarea name="description" id="description" class="form-control" rows="4">{{ old('description') }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Kategori</label>
+                <select name="categories[]" class="form-control" multiple>
+                    @foreach($categories as $category)
+                        <option value="{{ $category->id }}" {{ in_array($category->id, old('categories', [])) ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <small class="text-muted">Tahan Ctrl untuk pilih lebih dari satu</small>
             </div>
             <div class="form-group">
                 <label>Stok *</label>
