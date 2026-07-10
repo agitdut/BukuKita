@@ -50,9 +50,10 @@
             <tr>
                 <th>Denda</th>
                 <td>
-                    @if($loan->fine > 0)
+                    @php $fineDisplay = $loan->currentFine(); @endphp
+                    @if($fineDisplay > 0)
                         <span class="text-danger font-weight-bold">
-                            Rp {{ number_format($loan->fine, 0, ',', '.') }}
+                            Rp {{ number_format($fineDisplay, 0, ',', '.') }}
                         </span>
                     @else
                         <span class="text-success">Tidak ada denda</span>

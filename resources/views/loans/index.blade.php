@@ -57,8 +57,9 @@
                         @endif
                     </td>
                     <td>
-                        @if($loan->fine > 0)
-                            <span class="text-danger">Rp {{ number_format($loan->fine, 0, ',', '.') }}</span>
+                        @php $fineDisplay = $loan->currentFine(); @endphp
+                        @if($fineDisplay > 0)
+                            <span class="text-danger">Rp {{ number_format($fineDisplay, 0, ',', '.') }}</span>
                         @else
                             <span class="text-success">-</span>
                         @endif

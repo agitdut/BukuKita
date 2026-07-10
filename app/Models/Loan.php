@@ -34,4 +34,19 @@ class Loan extends Model
     {
         return $this->belongsTo(Book::class);
     }
+
+    // Hitung denda saat ini (untuk pinjaman aktif yang telat)
+    public function currentFine()
+    {
+        if ($this->status === 'returned') {
+            return $this->fine;
+        }
+
+        if ($this->due_date->isPast()) {
+            $daysLate = (int) ceil($this->due_date->diffInDays(now(), true));
+            return $daysLate * 1000;
+        }
+
+        return 0;
+    }
 }
